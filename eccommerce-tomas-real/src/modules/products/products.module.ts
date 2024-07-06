@@ -7,10 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './products.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Category } from '../categories/categories.entity';
+import { DataLoadService } from './dataLoad.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product]),
+    TypeOrmModule.forFeature([Product, Category]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -20,9 +22,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  providers: [ProductsService, ProductsRepository],
+  providers: [ProductsService, ProductsRepository, DataLoadService],
   controllers: [ProductsController],
-  exports: [ProductsRepository],
+  exports: [ProductsRepository, DataLoadService],
 })
 export class ProductsModule {
   configure(consumer: MiddlewareConsumer) {

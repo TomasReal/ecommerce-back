@@ -25,8 +25,8 @@ export const dbConfig = TypeOrmModule.forRootAsync({
     password: configService.get('DB_PASS'),
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     autoLoadEntities: true,
-    synchronize: true,
+    synchronize: false,
     logging: true,
-    dropSchema: true,
+    dropSchema: false,
   }),
 });
