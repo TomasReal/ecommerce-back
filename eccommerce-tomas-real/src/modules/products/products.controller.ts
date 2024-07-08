@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto, UpdateProductDto } from './products.dto';
-import { RolesGuard } from '../users/roles/roles.guard';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -19,6 +18,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { RolesGuard } from '../users/roles/roles.guard';
+import { Roles } from '../users/roles/roles.decorator';
 
 @ApiTags('Products')
 @ApiBearerAuth()
@@ -66,8 +67,6 @@ export class ProductsController {
           stock: true,
           imgUrl:
             'https://www.lavoz.com.ar/resizer/OzFzmC8SrRNJzSGCXj3aJgDGO3k=/0x0:0x0/980x640/filters:quality(80):format(webp)/cloudfront-us-east-1.images.arcpublishing.com/grupoclarin/BGRXLQMBXNADBIBSMZ6VQUUNQI.jpg',
-          categoryId: '123e4567-e89b-12d3-a456-426614174000',
-          orderDetailId: '123e4567-e89b-12d3-a456-426614174001',
         },
       },
     },
@@ -79,6 +78,7 @@ export class ProductsController {
   @ApiResponse({ status: 400, description: 'The format used is incorrect :(' })
   @ApiResponse({ status: 404, description: 'product not created :(' })
   @UseGuards(RolesGuard)
+  @Roles('admin')
   addProduct(@Body() createProductDto: CreateProductDto) {
     return this.productsService.addProduct(createProductDto);
   }
@@ -141,6 +141,7 @@ export class ProductsController {
   })
   @ApiResponse({ status: 404, description: 'Product not modified :(' })
   @UseGuards(RolesGuard)
+  @Roles('admin')
   updateProduct(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -160,6 +161,7 @@ export class ProductsController {
   })
   @ApiResponse({ status: 404, description: 'Product not deleted :(' })
   @UseGuards(RolesGuard)
+  @Roles('admin')
   deleteProduct(@Param('id') id: string) {
     return this.productsService.deleteProduct(id);
   }

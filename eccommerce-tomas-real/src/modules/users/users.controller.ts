@@ -21,6 +21,7 @@ import {
   ApiTags,
   ApiParam,
 } from '@nestjs/swagger';
+import { Roles } from './roles/roles.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT')
@@ -34,8 +35,13 @@ export class UsersController {
     status: 200,
     description: 'Users retrieved successfully :)',
   })
+  @ApiResponse({
+    status: 403,
+    description: 'You do not have authorization for this route :|',
+  })
   @ApiResponse({ status: 404, description: 'Users not found :(' })
   @UseGuards(RolesGuard)
+  @Roles('admin')
   getUsers() {
     return this.usersService.getUsers();
   }
@@ -54,6 +60,10 @@ export class UsersController {
   })
   @ApiResponse({
     status: 401,
+    description: 'You do not have a token :|',
+  })
+  @ApiResponse({
+    status: 403,
     description: 'You do not have authorization for this route :|',
   })
   @ApiResponse({ status: 404, description: 'User not found :(' })
@@ -70,13 +80,13 @@ export class UsersController {
       example: {
         summary: 'Example of registering a new user',
         value: {
-          name: 'Diego Armando Maradona',
-          email: 'eldiegote.net@example.com',
-          password: 'inglaterraout',
-          address: 'lamanodedios21',
+          name: 'Lionel Messi',
+          email: 'lionel.messi@example.com',
+          password: 'we.love.messi!',
+          address: '123 Main St',
           phone: 1234567890,
           country: 'Argentina',
-          city: 'Villa Fiorito, BA',
+          city: 'Buenos Aires',
         },
       },
     },
@@ -129,7 +139,7 @@ export class UsersController {
       example4: {
         summary: 'Example of changing phone',
         value: {
-          phone: 'new phone',
+          phone: 1234567890,
         },
       },
       example5: {

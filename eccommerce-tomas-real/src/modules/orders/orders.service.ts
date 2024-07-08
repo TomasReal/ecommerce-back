@@ -57,4 +57,12 @@ export class OrdersService {
       relations: ['orderDetail'],
     });
   }
+
+  async getOrder(id: string) {
+    const order = await this.ordersRepository.getOrder(id);
+    if (!order) {
+      throw new NotFoundException(`order does not exist`);
+    }
+    return order;
+  }
 }

@@ -1,34 +1,30 @@
 import { Module } from '@nestjs/common';
-
-//APP
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
-//PRODUCTS
-import { ProductsModule } from './modules/products/products.module';
-
-//USER
 import { UsersModule } from './modules/users/users.module';
-
-//AUTH
+import { ProductsModule } from './modules/products/products.module';
 import { AuthModule } from './modules/auth/auth.module';
-
-//CLOUDINARY
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
-
-//CONFIG
 import { ConfigurationModule, dbConfig } from './config/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    CloudinaryModule,
-    ProductsModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     UsersModule,
+    ProductsModule,
     AuthModule,
+    CloudinaryModule,
     dbConfig,
     ConfigurationModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: {
+        expiresIn: '1h',
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
