@@ -80,9 +80,9 @@ export class UsersController {
       example: {
         summary: 'Example of registering a new user',
         value: {
-          name: 'Lionel Messi',
-          email: 'lionel.messi@example.com',
-          password: 'we.love.messi!',
+          name: 'Diego Armando Maradnoa',
+          email: 'el10@example.com',
+          password: 'eldiegote10!',
           address: '123 Main St',
           phone: 1234567890,
           country: 'Argentina',
