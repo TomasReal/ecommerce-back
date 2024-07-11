@@ -22,6 +22,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { Roles } from './roles/roles.decorator';
+import { Role } from './roles/roles.enum';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT')
@@ -41,7 +42,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'Users not found :(' })
   @UseGuards(RolesGuard)
-  @Roles('admin')
+  @Roles(Role.Admin)
   getUsers() {
     return this.usersService.getUsers();
   }
@@ -80,10 +81,10 @@ export class UsersController {
       example: {
         summary: 'Example of registering a new user',
         value: {
-          name: 'Diego Armando Maradnoa',
+          name: 'Diego Armando Maradona',
           email: 'el10@example.com',
           password: 'eldiegote10!',
-          address: '123 Main St',
+          address: 'Villa Fiorito',
           phone: 1234567890,
           country: 'Argentina',
           city: 'Buenos Aires',

@@ -1,29 +1,29 @@
-import { OrderDetail } from '../ordersDetails/ordersDetails.entity';
+import { OrderDetails } from '../ordersDetails/ordersDetails.entity';
 import { User } from '../users/users.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({
-  name: 'orders',
-})
+@Entity({ name: 'orders' })
 export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  date: 'date';
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  date: Date;
 
-  @ManyToOne(() => User, (user) => user.order)
+  @ManyToOne(() => User, (user) => user.order, { cascade: true })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToOne(() => OrderDetail, (orderDetail) => orderDetail.order)
-  orderDetail: OrderDetail[];
-
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  total: number;
+  @OneToOne(() => OrderDetails, (orderDetails) => orderDetails.order, {
+    cascade: true,
+  })
+  @JoinColumn()
+  orderDetails: OrderDetails;
 }

@@ -26,7 +26,6 @@ export class CloudinaryController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'File upload',
-    // Swagger expects `type` to be `multipart/form-data`
     schema: {
       type: 'object',
       properties: {
@@ -41,14 +40,14 @@ export class CloudinaryController {
     status: 200,
     description: 'Photo uploaded correctly :)',
   })
-  @ApiResponse({ status: 400, description: 'The format used is incorrect :s' })
-  @ApiResponse({ status: 404, description: 'Photo not uploaded >(' })
+  @ApiResponse({ status: 400, description: 'The format used is incorrect :(' })
+  @ApiResponse({ status: 404, description: 'Photo not uploaded >D' })
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     const uploadResult = await this.cloudinaryService.uploadImage(file);
     return {
       url: uploadResult.url,
-      source_url: uploadResult.source_url,
+      source_url: uploadResult.secure_url,
     };
   }
 }

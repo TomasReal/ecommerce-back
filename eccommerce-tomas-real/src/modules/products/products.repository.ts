@@ -1,59 +1,17 @@
-/* import { Injectable, NotFoundException } from '@nestjs/common';
-import { Product } from './products.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateProductDto } from './products.dto';
-
-@Injectable()
-export class ProductsRepository {
-  constructor(
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
-  ) {}
-
-  async getProducts() {
-    const products = await this.productRepository;
-    return await products;
-  }
-
-  async getProductById(id: string): Promise<Product> {
-    const product = await this.productRepository.findOne({ where: { id } });
-    if (!product || product.stock == false) {
-      throw new NotFoundException(`Product does not exist or out of stock`);
-    }
-    return product;
-  }
-
-  async addProduct(productData: CreateProductDto): Promise<Product> {
-    const newProduct = this.productRepository.create(productData);
-    return await this.productRepository.save(newProduct);
-  }
-
-  async updateProduct(product: Product): Promise<Product> {
-    return this.productRepository.save(product);
-  }
-
-  async deleteProduct(id: string): Promise<void> {
-    const product = await this.productRepository.findOne({ where: { id } });
-    if (!product) {
-      throw new NotFoundException(`Product with id ${id} not found`);
-    }
-    await this.productRepository.delete(id);
-  }
-}
- */
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product } from './products.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateProductDto } from './products.dto';
+import * as data from '../../data.json';
+import { Categories } from '../categories/categories.entity';
 
 @Injectable()
 export class ProductsRepository {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(Categories)
+    private readonly categoriesRepository: Repository<Categories>,
   ) {}
 
   async getProducts(): Promise<Product[]> {
@@ -68,13 +26,45 @@ export class ProductsRepository {
     return product;
   }
 
-  async addProduct(productData: CreateProductDto): Promise<Product> {
-    const newProduct = this.productRepository.create(productData);
-    return this.productRepository.save(newProduct);
+  async addProduct() {
+    const categories = await this.categoriesRepository.find({
+      relations: {
+        products: true,
+      },
+    });
+    data?.map(async (element) => {
+      const category = categories.find(
+        (category) => category.name === element.category,
+      );
+
+      if (!category) {
+        console.error(`Category not found: ${element.category}`);
+        return;
+      }
+
+      const product = new Product();
+      product.name = element.name;
+      product.description = element.description;
+      product.price = element.price;
+      product.imgUrl = element.imgUrl;
+      product.stock = element.stock;
+      product.category = category;
+
+      await this.productRepository
+        .createQueryBuilder()
+        .insert()
+        .into(Product)
+        .values(product)
+        .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name'])
+        .execute();
+    });
+    return 'Productos agregados';
   }
 
-  async updateProduct(product: Product): Promise<Product> {
-    return this.productRepository.save(product);
+  async updateProduct(id: string, product: Product) {
+    await this.productRepository.update(id, product);
+    const updateProduct = await this.productRepository.findOneBy({ id });
+    return updateProduct;
   }
 
   async deleteProduct(id: string): Promise<void> {

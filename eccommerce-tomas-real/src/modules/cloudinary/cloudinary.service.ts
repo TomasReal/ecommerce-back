@@ -5,7 +5,7 @@ import toStream = require('buffer-to-stream');
 @Injectable()
 export class CloudinaryService {
   async uploadImage(file: Express.Multer.File): Promise<UploadApiResponse> {
-    console.log('asjkdbasfbaskbfasjklbfasjkbfa', file);
+    console.log('Información del archivo subido: ', file);
     return new Promise((resolve, reject) => {
       const upload = v2.uploader.upload_stream(
         { resource_type: 'auto' },

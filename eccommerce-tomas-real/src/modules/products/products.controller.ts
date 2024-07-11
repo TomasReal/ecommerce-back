@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto, UpdateProductDto } from './products.dto';
+import { CreateProductDto } from './products.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,6 +20,8 @@ import {
 } from '@nestjs/swagger';
 import { RolesGuard } from '../users/roles/roles.guard';
 import { Roles } from '../users/roles/roles.decorator';
+import { Product } from './products.entity';
+import { Role } from '../users/roles/roles.enum';
 
 @ApiTags('Products')
 @ApiBearerAuth()
@@ -79,8 +81,8 @@ export class ProductsController {
   @ApiResponse({ status: 404, description: 'product not created :(' })
   @UseGuards(RolesGuard)
   @Roles('admin')
-  addProduct(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.addProduct(createProductDto);
+  addProduct() {
+    return this.productsService.addProduct();
   }
 
   @Put(':id')
@@ -141,11 +143,8 @@ export class ProductsController {
   })
   @ApiResponse({ status: 404, description: 'Product not modified :(' })
   @UseGuards(RolesGuard)
-  @Roles('admin')
-  updateProduct(
-    @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
-  ) {
+  @Roles(Role.Admin)
+  updateProduct(@Param('id') id: string, @Body() updateProductDto: Product) {
     return this.productsService.updateProduct(id, updateProductDto);
   }
 

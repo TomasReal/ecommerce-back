@@ -1,26 +1,42 @@
-import { Order } from '../orders/orders.entity';
-import { Product } from '../products/products.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
+  JoinTable,
   ManyToMany,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Order } from '../orders/orders.entity';
+import { Product } from '../products/products.entity';
 
-@Entity({
-  name: 'orderDetails',
-})
-export class OrderDetail {
+@Entity({ name: 'orderdetails' })
+export class OrderDetails {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+  })
   price: number;
 
-  @OneToOne(() => Order, (order) => order.orderDetail)
+  @ManyToOne(() => Order, (order) => order.orderDetails)
+  @JoinColumn({ name: 'order_id' })
   order: Order;
 
-  @ManyToMany(() => Product, (product) => product.orderDetail)
-  product: Product;
+  @ManyToMany(() => Product)
+  @JoinTable({
+    name: 'orderdetails_products',
+    joinColumn: {
+      name: 'orderdetail_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'product_id',
+      referencedColumnName: 'id',
+    },
+  })
+  products: Product[];
 }

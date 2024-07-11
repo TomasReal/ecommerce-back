@@ -1,19 +1,62 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/AuthGuard';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { CreateOrderDto } from './createOrder.dto';
+import { Order } from './orders.entity';
 
 @ApiTags('orders')
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly orderService: OrdersService) {}
 
-  @Post('new')
-  async addOrder(@Param('id') id: string, products: { id: string }[]) {
-    return this.ordersService.addOrder(id, products);
+  @ApiBearerAuth()
+  @Post()
+  @ApiOperation({ summary: 'Create a new order' })
+  @ApiResponse({
+    status: 201,
+    description: 'Order created successfully',
+    type: Order,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User or Product not found',
+  })
+  addOrder(@Body() order: CreateOrderDto) {
+    return this.orderService.addOrder(order);
   }
 
+  @ApiBearerAuth()
   @Get(':id')
-  async getOrder() {
-    return this.ordersService.getOrder;
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get order by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order retrieved successfully',
+    type: Order, // Assuming Order entity includes order details
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Order not found',
+  })
+  getOrder(@Param('id', ParseUUIDPipe) id: string) {
+    return this.orderService.getOrder(id);
   }
 }

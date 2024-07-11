@@ -1,27 +1,18 @@
 /* eslint-disable prettier/prettier */
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
-import { LoggerMiddleware } from 'src/middlewares/logger.middleware';
-import { OrdersRepository } from './orders.repository';
+import { OrderRepository } from './orders.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './orders.entity';
-import { UsersModule } from '../users/users.module';
-import { ProductsModule } from '../products/products.module';
+import { OrderDetails } from '../ordersDetails/ordersDetails.entity';
+import { User } from '../users/users.entity';
+import { Product } from '../products/products.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Order]),
-    UsersModule, // Importa UsersModule
-    ProductsModule, // Importa ProductsModule
-  ],
+  imports: [TypeOrmModule.forFeature([Order, OrderDetails, User, Product])],
   controllers: [OrdersController],
-  providers: [OrdersService, OrdersRepository],
-  exports: [OrdersService],
+  providers: [OrdersService, OrderRepository],
 })
-export class OrdersModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('orders');
-  }
-}
+export class OrdersModule {}
 

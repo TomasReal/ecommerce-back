@@ -1,16 +1,27 @@
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Product } from '../products/products.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({
   name: 'categories',
 })
-export class Category {
+export class Categories {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 50, type: 'varchar' })
+  @Column({
+    type: 'varchar',
+    length: 50,
+    unique: true,
+  })
   name: string;
 
-  @OneToOne(() => Product, (product) => product.category)
-  product: Product;
+  @OneToMany(() => Product, (product) => product.category)
+  @JoinColumn()
+  products: Product[];
 }

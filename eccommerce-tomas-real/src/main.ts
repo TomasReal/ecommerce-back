@@ -4,7 +4,8 @@ import { LoggerGlobalMiddleware } from './middlewares/logger.middleware';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { DataLoadService } from './modules/products/dataLoad.service';
+import { CategoriesRepository } from './modules/categories/categories.repository';
+import { ProductsRepository } from './modules/products/products.repository';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,14 +31,22 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  const categoryPreload = app.get(CategoriesRepository);
+  const productPreload = app.get(ProductsRepository);
+
+  await categoryPreload.addCategories();
+  await productPreload.addProduct();
+
   await app.listen(3000);
   console.log('SUCCESSFULLY CONNECTION');
 }
 
 async function bootstrapWithLoad() {
-  const app = await NestFactory.create(AppModule);
-  const dataLoadService = app.get(DataLoadService);
-  await dataLoadService.load();
+  /* const categoryPreload = app.get(CategoriesRepository);
+  const productPreload = app.get(ProductsRepository);
+
+  await categoryPreload.addCategories();
+  await productPreload.addProduct(); */
 
   await bootstrap();
 }

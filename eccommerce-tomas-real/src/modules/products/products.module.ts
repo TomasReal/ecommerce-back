@@ -7,24 +7,23 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './products.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Category } from '../categories/categories.entity';
-import { DataLoadService } from './dataLoad.service';
+import { Categories } from '../categories/categories.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, Category]),
+    TypeOrmModule.forFeature([Product, Categories]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '60s' },
+        signOptions: { expiresIn: '60m' },
       }),
       inject: [ConfigService],
     }),
   ],
-  providers: [ProductsService, ProductsRepository, DataLoadService],
+  providers: [ProductsService, ProductsRepository],
   controllers: [ProductsController],
-  exports: [ProductsRepository, DataLoadService],
+  exports: [ProductsRepository],
 })
 export class ProductsModule {
   configure(consumer: MiddlewareConsumer) {

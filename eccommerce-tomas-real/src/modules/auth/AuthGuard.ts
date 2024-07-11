@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
+import { Role } from '../users/roles/roles.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -15,24 +16,23 @@ export class AuthGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = request.headers.authorization?.split(' ')[1];
 
-    if (!token) throw new UnauthorizedException('Se necesita un Token');
+    const token = request.headers.authorization?.split(' ')[1];
+    if (!token) throw new UnauthorizedException('token requerido');
 
     try {
       const secret = process.env.JWT_SECRET;
 
-      const payload = this.jwtService.verify(token, { secret });
+      const user = this.jwtService.verify(token, { secret });
+      if (!user) throw new UnauthorizedException('Error al validar el token');
+      user.exp = new Date(user.exp * 1000);
+      user.roles = user.isAdmin ? [Role.Admin] : [Role.User];
 
-      payload.iat = new Date(payload.iat * 1000);
-      payload.exp = new Date(payload.exp * 1000);
-
-      request.user = payload;
+      request.user = user;
 
       return true;
     } catch (error) {
-      console.error('este es el error:', error.stack);
-      throw new UnauthorizedException('Token inválido');
+      throw new UnauthorizedException('Error al validar el token');
     }
   }
 }

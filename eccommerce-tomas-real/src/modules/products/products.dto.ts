@@ -26,7 +26,7 @@ export class CreateProductDto {
 
   @IsBoolean()
   @IsNotEmpty()
-  stock: boolean;
+  stock: number;
 
   @IsString()
   @IsOptional()
@@ -67,4 +67,5 @@ export class PartialProductDto {
   @IsUUID()
   @IsNotEmpty()
   id: string;
+  stock: boolean;
 }
