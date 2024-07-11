@@ -55,6 +55,11 @@ export class OrderRepository {
 
           total += Number(product.price);
 
+          const stock = product.stock;
+          if (stock === 0) {
+            throw new NotFoundException(`Stock insuficiente`);
+          }
+
           await queryRunner.manager.update(
             Product,
             { id: element.id },

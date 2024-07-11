@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,13 +13,19 @@ export class UsersRepository {
     console.log(this.usersRepository);
   }
 
-  async getUsers(): Promise<User[]> {
-    return this.usersRepository.find();
+  private removeSensitiveFields(user: User): Partial<User> {
+    const { password, role, ...userWithoutSensitiveFields } = user;
+    return userWithoutSensitiveFields;
   }
 
-  async getUserById(id: string): Promise<User | null> {
+  async getUsers(): Promise<Partial<User>[]> {
+    const users = await this.usersRepository.find();
+    return users.map((user) => this.removeSensitiveFields(user));
+  }
+
+  async getUserById(id: string): Promise<Partial<User> | null> {
     const foundUser = await this.usersRepository.findOne({ where: { id } });
-    return foundUser ? foundUser : null;
+    return foundUser ? this.removeSensitiveFields(foundUser) : null;
   }
 
   async addUser(user: User): Promise<User> {
@@ -38,8 +45,24 @@ export class UsersRepository {
     return await this.usersRepository.save(newUser);
   }
 
-  async updateUser(updatedUser: User): Promise<User> {
-    return this.usersRepository.save(updatedUser);
+  async updateUser(updatedUser: Partial<User> & { id: string }): Promise<User> {
+    if (!updatedUser.id) {
+      throw new BadRequestException('User ID is required');
+    }
+
+    // Primero, actualiza el usuario en la base de datos
+    await this.usersRepository.update(updatedUser.id, updatedUser);
+
+    // Luego, recupera el usuario actualizado, asegurándose de que tiene el tipo correcto
+    const updatedUserEntity = await this.usersRepository.findOne({
+      where: { id: updatedUser.id },
+    });
+    if (!updatedUserEntity) {
+      throw new BadRequestException(`User with id ${updatedUser.id} not found`);
+    }
+
+    // Devuelve el usuario actualizado sin campos sensibles
+    return this.removeSensitiveFields(updatedUserEntity) as User;
   }
 
   async deleteUser(id: string): Promise<string> {
@@ -47,8 +70,9 @@ export class UsersRepository {
     return id;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return this.usersRepository.findOne({ where: { email } });
+  async getUserByEmail(email: string): Promise<Partial<User> | undefined> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    return user ? this.removeSensitiveFields(user) : undefined;
   }
 }
 

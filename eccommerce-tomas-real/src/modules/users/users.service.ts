@@ -43,13 +43,14 @@ export class UsersService {
     return null;
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<any> {
     const user = await this.usersRepository.getUserById(id);
     if (!user) {
-      throw new NotFoundException(`user with id ${id} not found`);
+      throw new NotFoundException(`User with id ${id} not found`);
     }
 
-    const updatedUser = { ...user, ...updateUserDto };
+    // Asegúrate de que el objeto de actualización tenga el id
+    const updatedUser = { ...user, ...updateUserDto, id }; // Incluye el id para la actualización
 
     const savedUser = await this.usersRepository.updateUser(updatedUser);
     return instanceToPlain(plainToInstance(User, savedUser));
@@ -62,7 +63,6 @@ export class UsersService {
     }
 
     await this.usersRepository.deleteUser(id);
-
     return { message: 'User deleted successfully' };
   }
 }
