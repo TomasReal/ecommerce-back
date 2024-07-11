@@ -21,6 +21,7 @@ export class ProductsService {
   async addProduct(): Promise<string> {
     try {
       await this.productsRepository.addProduct();
+
       return 'New product added successfully';
     } catch (error) {
       throw new Error('Error adding new product');

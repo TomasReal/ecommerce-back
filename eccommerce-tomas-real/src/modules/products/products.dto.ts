@@ -8,9 +8,9 @@ import {
 } from 'class-validator';
 
 export class CreateProductDto {
-  @IsString()
+  /*  @IsString()
   @IsNotEmpty()
-  id: string;
+  id: string; */
 
   @IsString()
   @IsNotEmpty()

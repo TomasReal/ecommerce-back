@@ -79,8 +79,8 @@ export class ProductsController {
   })
   @ApiResponse({ status: 400, description: 'The format used is incorrect :(' })
   @ApiResponse({ status: 404, description: 'product not created :(' })
-  @UseGuards(RolesGuard)
-  @Roles('admin')
+  /*  @UseGuards(RolesGuard)
+  @Roles(Role.Admin) */
   addProduct() {
     return this.productsService.addProduct();
   }
