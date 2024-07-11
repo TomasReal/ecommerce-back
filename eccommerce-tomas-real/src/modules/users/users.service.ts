@@ -56,7 +56,7 @@ export class UsersService {
       throw new NotFoundException(`user with id ${id} not found`);
     }
 
-    const updatedUser = { ...user, ...updateUserDto, id }; // Asegúrate de incluir el id
+    const updatedUser = { ...user, ...updateUserDto, id };
 
     const savedUser = await this.usersRepository.updateUser(updatedUser);
     return instanceToPlain(plainToInstance(User, savedUser));

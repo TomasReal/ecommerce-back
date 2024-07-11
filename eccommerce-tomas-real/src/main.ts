@@ -42,12 +42,6 @@ async function bootstrap() {
 }
 
 async function bootstrapWithLoad() {
-  /* const categoryPreload = app.get(CategoriesRepository);
-  const productPreload = app.get(ProductsRepository);
-
-  await categoryPreload.addCategories();
-  await productPreload.addProduct(); */
-
   await bootstrap();
 }
 

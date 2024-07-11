@@ -15,7 +15,7 @@ export class User {
   @Column()
   email: string;
 
-  @Exclude() // Excluir la contraseña de la serialización
+  @Exclude()
   @Column()
   password: string;
 
@@ -32,7 +32,7 @@ export class User {
   city: string;
 
   @Column()
-  role: string;
+  role: string = 'default';
 
   @OneToMany(() => Order, (order) => order.user)
   order?: Order[];

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { CloudinaryConfig } from '../../config/cloudinary';
 import { CloudinaryService } from './cloudinary.service';
