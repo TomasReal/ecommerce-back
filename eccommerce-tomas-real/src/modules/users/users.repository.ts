@@ -13,6 +13,7 @@ export class UsersRepository {
     console.log(this.usersRepository);
   }
 
+  // Helper function to remove sensitive fields from a user object
   private removeSensitiveFields(user: User): Partial<User> {
     const { password, role, ...userWithoutSensitiveFields } = user;
     return userWithoutSensitiveFields;
@@ -50,10 +51,9 @@ export class UsersRepository {
       throw new BadRequestException('User ID is required');
     }
 
-    // Primero, actualiza el usuario en la base de datos
+    // Actualiza el usuario en la base de datos
     await this.usersRepository.update(updatedUser.id, updatedUser);
-
-    // Luego, recupera el usuario actualizado, asegurándose de que tiene el tipo correcto
+    // Devuelve el usuario actualizado
     const updatedUserEntity = await this.usersRepository.findOne({
       where: { id: updatedUser.id },
     });
@@ -61,8 +61,7 @@ export class UsersRepository {
       throw new BadRequestException(`User with id ${updatedUser.id} not found`);
     }
 
-    // Devuelve el usuario actualizado sin campos sensibles
-    return this.removeSensitiveFields(updatedUserEntity) as User;
+    return updatedUserEntity;
   }
 
   async deleteUser(id: string): Promise<string> {
@@ -73,6 +72,10 @@ export class UsersRepository {
   async getUserByEmail(email: string): Promise<Partial<User> | undefined> {
     const user = await this.usersRepository.findOne({ where: { email } });
     return user ? this.removeSensitiveFields(user) : undefined;
+  }
+
+  async getUserByEmailWithPassword(email: string): Promise<User | undefined> {
+    return this.usersRepository.findOne({ where: { email } });
   }
 }
 

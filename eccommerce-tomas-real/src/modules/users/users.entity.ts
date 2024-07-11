@@ -32,7 +32,7 @@ export class User {
   city: string;
 
   @Column()
-  role: string = 'default';
+  role: string;
 
   @OneToMany(() => Order, (order) => order.user)
   order?: Order[];

@@ -4,7 +4,10 @@ import { UsersRepository } from './users.repository';
 import { CreateUserDto, UpdateUserDto } from './User.dto';
 import { User } from './users.entity';
 import { plainToInstance, instanceToPlain } from 'class-transformer';
+import { ApiTags } from '@nestjs/swagger';
+import { Role } from './roles/roles.enum';
 
+@ApiTags('users')
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {
@@ -36,21 +39,24 @@ export class UsersService {
   }
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersRepository.getUserByEmail(email);
-    if (user && (await bcrypt.compare(password, user.password))) {
+    const user = await this.usersRepository.getUserByEmailWithPassword(email);
+    if (
+      user &&
+      user.password &&
+      (await bcrypt.compare(password, user.password))
+    ) {
       return instanceToPlain(plainToInstance(User, user));
     }
     return null;
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.usersRepository.getUserById(id);
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new NotFoundException(`user with id ${id} not found`);
     }
 
-    // Asegúrate de que el objeto de actualización tenga el id
-    const updatedUser = { ...user, ...updateUserDto, id }; // Incluye el id para la actualización
+    const updatedUser = { ...user, ...updateUserDto, id }; // Asegúrate de incluir el id
 
     const savedUser = await this.usersRepository.updateUser(updatedUser);
     return instanceToPlain(plainToInstance(User, savedUser));
@@ -63,6 +69,7 @@ export class UsersService {
     }
 
     await this.usersRepository.deleteUser(id);
+
     return { message: 'User deleted successfully' };
   }
 }
