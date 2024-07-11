@@ -88,6 +88,7 @@ export class UsersController {
           phone: 1234567890,
           country: 'Argentina',
           city: 'Buenos Aires',
+          dateOfBirth: '1990-01-01',
         },
       },
     },

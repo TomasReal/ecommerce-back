@@ -34,6 +34,9 @@ export class CreateUserDto {
   readonly address: string;
 
   @IsNotEmpty()
+  readonly dateOfBirth: Date;
+
+  @IsNotEmpty()
   readonly phone: number;
 
   @IsString()

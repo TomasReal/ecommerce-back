@@ -5,7 +5,6 @@ import { CreateUserDto, UpdateUserDto } from './User.dto';
 import { User } from './users.entity';
 import { plainToInstance, instanceToPlain } from 'class-transformer';
 import { ApiTags } from '@nestjs/swagger';
-import { Role } from './roles/roles.enum';
 
 @ApiTags('users')
 @Injectable()

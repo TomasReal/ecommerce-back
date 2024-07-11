@@ -26,6 +26,9 @@ export class User {
   phone: number;
 
   @Column()
+  dateOfBirth: Date;
+
+  @Column()
   country: string;
 
   @Column()
